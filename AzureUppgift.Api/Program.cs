@@ -45,6 +45,9 @@ app.MapGet("/api/secret", async () =>
 {
     await secretClient.GetSecretAsync("apikey");
 
+    // Skriver i loggen att det fungerade
+    app.Logger.LogInformation("Hemligheten hämtades från Key Vault");
+
     // Visar inte själva hemligheten
     return Results.Ok(new
     {
