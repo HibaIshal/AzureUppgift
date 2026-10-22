@@ -1,15 +1,21 @@
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Lägger till tjänster
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Kopplar appen till Key Vault
+var secretClient = new SecretClient(
+    new Uri("https://azureuppgift-hiba-kv.vault.azure.net/"),
+    new DefaultAzureCredential());
+
+// Använder Swagger när appen körs lokalt
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -22,6 +28,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Enkel lista med produkter
 var products = new[]
 {
     new { Id = 1, Name = "Laptop" },
@@ -30,5 +37,17 @@ var products = new[]
 };
 
 app.MapGet("/api/products", () => products);
+
+// Testar att appen kan hämta hemligheten
+app.MapGet("/api/secret", async () =>
+{
+    await secretClient.GetSecretAsync("apikey");
+
+    // Visar inte själva hemligheten
+    return Results.Ok(new
+    {
+        message = "Hemligheten kunde hämtas från Key Vault"
+    });
+});
 
 app.Run();
