@@ -17,6 +17,10 @@ stages:
     - script: dotnet restore
       displayName: 'Restore dependencies'
 
+    # Kontrollerar paket efter kända sårbarheter
+    - script: dotnet list AzureUppgift.sln package --vulnerable --include-transitive
+      displayName: 'Kontrollera sårbara paket'
+
     # Bygger projektet
     - script: dotnet build --configuration Release --no-restore
       displayName: 'Build'
@@ -42,12 +46,12 @@ stages:
         artifact: 'webapp'
         publishLocation: 'pipeline'
 
+
 # Deployar appen till Azure
 - stage: Deploy
   displayName: 'Deploy'
   dependsOn: Build
   condition: succeeded()
-
   jobs:
   - job: DeployWebApp
     steps:
