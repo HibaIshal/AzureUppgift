@@ -33,7 +33,9 @@ var products = new[]
 {
     new { Id = 1, Name = "Laptop" },
     new { Id = 2, Name = "Tangentbord" },
-    new { Id = 3, Name = "Mus" }
+    new { Id = 3, Name = "Mus" },
+    new { Id = 4, Name = "Skärm" }
+
 };
 
 app.MapGet("/api/products", () => products);
